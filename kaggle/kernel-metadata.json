@@ -1,9 +1,9 @@
 {
   "id": "slawagromov/slakwik-sermons-transcribe",
   "title": "Slakwik Sermons Transcribe",
-  "code_file": "transcribe.py",
+  "code_file": "transcribe.ipynb",
   "language": "python",
-  "kernel_type": "script",
+  "kernel_type": "notebook",
   "is_private": false,
   "enable_gpu": true,
   "enable_tpu": false,
