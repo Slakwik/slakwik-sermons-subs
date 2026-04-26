@@ -5,6 +5,7 @@ The actual git commit + push is done by the workflow's next step."""
 from __future__ import annotations
 
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -15,6 +16,7 @@ import yaml
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 KERNEL_DIR = REPO_ROOT / "kaggle"
+KERNEL_META = KERNEL_DIR / "kernel-metadata.json"
 TRANSCRIPTS_DIR = REPO_ROOT / "transcripts"
 VIDEOS_FILE = REPO_ROOT / "videos.yml"
 
@@ -22,9 +24,19 @@ POLL_SEC = 60
 TIMEOUT_MIN = 300  # 5h — Kaggle script kernels run up to 9h
 
 
-def kernel_slug() -> str:
-    meta = json.loads((KERNEL_DIR / "kernel-metadata.json").read_text())
+def align_kernel_owner_to_env() -> str:
+    """Rewrite kernel-metadata.json so the kernel id owner matches the
+    authenticated Kaggle user. Returns the resulting full id (user/slug)."""
+    user = os.environ["KAGGLE_USERNAME"].strip()
+    meta = json.loads(KERNEL_META.read_text())
+    _old_user, slug = meta["id"].split("/", 1)
+    meta["id"] = f"{user}/{slug}"
+    KERNEL_META.write_text(json.dumps(meta, indent=2) + "\n")
     return meta["id"]
+
+
+def kernel_slug() -> str:
+    return json.loads(KERNEL_META.read_text())["id"]
 
 
 def has_pending() -> bool:
@@ -94,7 +106,8 @@ def main() -> int:
         print("No pending videos — skipping Kaggle run.")
         return 0
 
-    slug = kernel_slug()
+    slug = align_kernel_owner_to_env()
+    print(f"Kernel id: {slug}")
     push_kernel()
     state = wait_for_completion(slug)
     out = pull_outputs(slug)
