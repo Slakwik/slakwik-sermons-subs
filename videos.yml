@@ -4,4 +4,6 @@
 #     title: <короткое название>
 #
 # Поля status, transcript_path, error выставляются пайплайном автоматически.
-videos: []
+videos: 
+  - url: https://rutube.ru/video/e73b9c93a3d418deaeccb9b9d6805d84/
+    title: "19042026"
