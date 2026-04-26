@@ -26,16 +26,10 @@ jobs:
       - name: Install deps
         run: pip install --quiet kaggle pyyaml
 
-      - name: Configure Kaggle credentials
+      - name: Trigger Kaggle and pull results
         env:
           KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
           KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
-        run: |
-          mkdir -p ~/.kaggle
-          printf '{"username":"%s","key":"%s"}\n' "$KAGGLE_USERNAME" "$KAGGLE_KEY" > ~/.kaggle/kaggle.json
-          chmod 600 ~/.kaggle/kaggle.json
-
-      - name: Trigger Kaggle and pull results
         run: python scripts/trigger_kaggle.py
 
       - name: Commit transcripts
